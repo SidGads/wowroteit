@@ -10,10 +10,14 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private EditText mBookInput;
     private TextView mTitleText;
     private TextView mAuthorText;
+    private ImageView mImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mBookInput = (EditText)findViewById(R.id.bookInput);
         mTitleText = (TextView)findViewById(R.id.titleText);
         mAuthorText = (TextView)findViewById(R.id.authorText);
+        mImageView = findViewById(R.id.imageView);
     }
 
     public void searchBooks(View view) {
@@ -118,22 +124,31 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             int i = 0;
             String title = null;
             String authors = null;
+            String thumbnailImg = null;
+
 
             while (i < itemsArray.length() &&
                     (authors == null && title == null)) {
                 // Get the current item information.
                 JSONObject book = itemsArray.getJSONObject(i);
                 JSONObject volumeInfo = book.getJSONObject("volumeInfo");
-
+                JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
                 // Try to get the author and title from the current item,
                 // catch if either field is empty and move on.
                 try {
                     title = volumeInfo.getString("title");
+                    Log.d("Image",title);
                     authors = volumeInfo.getString("authors");
+                    Log.d("Image",authors);
+
+                    thumbnailImg = imageLinks.getString("thumbnail");
+                    Log.d("Image",thumbnailImg);
 
                     if (title != null && authors != null) {
                         mTitleText.setText(title);
                         mAuthorText.setText(authors);
+                        Picasso.get().load(thumbnailImg).into(mImageView);
+
                     } else {
                         mTitleText.setText(R.string.no_results);
                         mAuthorText.setText("");
