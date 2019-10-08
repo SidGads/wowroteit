@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 && queryString.length() != 0) {
             Bundle queryBundle = new Bundle();
             queryBundle.putString("queryString", queryString);
-            getSupportLoaderManager().restartLoader(0, queryBundle, this);
+            LoaderManager.getInstance(this).restartLoader(0, queryBundle, this);
             mAuthorText.setText("");
             mTitleText.setText(R.string.loading);
         } else {
@@ -147,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     if (title != null && authors != null) {
                         mTitleText.setText(title);
                         mAuthorText.setText(authors);
+                        Picasso.get().setLoggingEnabled(true);
                         Picasso.get().load(thumbnailImg).into(mImageView);
 
                     } else {
