@@ -34,9 +34,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mBookInput = (EditText)findViewById(R.id.bookInput);
-        mTitleText = (TextView)findViewById(R.id.titleText);
-        mAuthorText = (TextView)findViewById(R.id.authorText);
+        mBookInput = findViewById(R.id.bookInput);
+        mTitleText = findViewById(R.id.titleText);
+        mAuthorText = findViewById(R.id.authorText);
         mImageView = findViewById(R.id.imageView);
     }
 
@@ -57,41 +57,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
         if (networkInfo != null && networkInfo.isConnected()
                 && queryString.length() != 0) {
-            new FetchBook(mTitleText, mAuthorText).execute(queryString);
-            mAuthorText.setText("");
-            mTitleText.setText(R.string.loading);
-        } else {
-            if (queryString.length() == 0) {
-                mAuthorText.setText("");
-                mTitleText.setText(R.string.no_search_term);
+            if (view.getId()==R.id.searchButton) {
+                new FetchBook(mTitleText, mAuthorText).execute(queryString);
             } else {
-                mAuthorText.setText("");
-                mTitleText.setText(R.string.no_network);
+                Bundle queryBundle = new Bundle();
+                queryBundle.putString("queryString", queryString);
+                LoaderManager.getInstance(this).restartLoader(0, queryBundle, this);
             }
-        }
-    }
-
-    public void searchBooksLoader(View view) {
-        String queryString = mBookInput.getText().toString();
-        InputMethodManager inputManager = (InputMethodManager)
-                getSystemService(Context.INPUT_METHOD_SERVICE);
-
-        if (inputManager != null ) {
-            inputManager.hideSoftInputFromWindow(view.getWindowToken(),
-                    InputMethodManager.HIDE_NOT_ALWAYS);
-        }
-
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = null;
-        if (connMgr != null) {
-            networkInfo = connMgr.getActiveNetworkInfo();
-        }
-        if (networkInfo != null && networkInfo.isConnected()
-                && queryString.length() != 0) {
-            Bundle queryBundle = new Bundle();
-            queryBundle.putString("queryString", queryString);
-            LoaderManager.getInstance(this).restartLoader(0, queryBundle, this);
             mAuthorText.setText("");
             mTitleText.setText(R.string.loading);
         } else {
@@ -114,7 +86,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             queryString = args.getString("queryString");
         }
 
-        return new BookLoader(this, queryString);    }
+        return new BookLoader(this, queryString);
+    }
 
     @Override
     public void onLoadFinished(@NonNull Loader<String> loader, String data) {
@@ -124,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             int i = 0;
             String title = null;
             String authors = null;
-            String thumbnailImg = null;
+            String thumbnailImg;
 
 
             while (i < itemsArray.length() &&
