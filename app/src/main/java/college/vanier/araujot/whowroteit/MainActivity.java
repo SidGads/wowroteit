@@ -177,7 +177,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     public void volleyAttemp(View view) {
 
-        String url = "https://www.googleapis.com/books/v1/volumes?";
 
         EditText et = (EditText) findViewById(R.id.bookInput);
         String reqStr = et.toString();
@@ -191,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
 
             RequestQueue queue = Volley.newRequestQueue(this);
-            Uri uri = builtURI.parse(BOOK_BASE_URL);
+            String url = builtURI.toString();
 
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                     new Response.Listener<String>() {
